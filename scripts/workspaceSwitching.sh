@@ -1,75 +1,65 @@
 #!/usr/bin/env bash
+#
+# Author:      travmonkey
+# Date:        2025-09-30
+# Description: Switches or moves windows between workspaces on the active monitor.
+#              Supports numeric (1-5) and relative (--left/--right) switching.
+# Usage:       workspaceSwitching.sh <1-5 | --left | --right> [--move]
 
-# script to switch between workspaces independant of monitor
-# input: workspace number
+# Note: This script is legacy
 
-# read argument to a variable
-# check to make sure there is an argument
+set -euo pipefail
+
 if [ -z "$1" ]; then
-  echo "Usage: workspaceSwitching.sh <workspace number> [--move]"
+  echo "Usage: $0 <1-5 | --left | --right> [--move]"
   exit 1
 fi
 
-# get current active monitor
-current_monitor=$(hyprctl -j activeworkspace | jq .monitor | tr -d '"')
-current_workspace=$(hyprctl -j activeworkspace | jq .id)
-target_workspace=$1
-keyword="workspace"
-
-echo current_monitor: "$current_monitor"
-
-if [ "$2" == "--move" ]; then
-  keyword="movetoworkspace"
+operation="workspace"
+if [[ "${2:-}" == "--move" ]]; then
+  operation="movetoworkspace"
 fi
 
+current_monitor=$(hyprctl -j activeworkspace | jq -r .monitor)
+current_workspace=$(hyprctl -j activeworkspace | jq .id)
 
-# Finding target workspace
-# find the realId of the target workspace section
-# (e.g. the offset from the closest multiple of 5)
-# e.g. 1, 2, 3, 4, 5 -> 1, 2, 3, 4, 5
-# e.g. 6, 7, 8, 9, 10 -> 1, 2, 3, 4, 5
-# scuffed yea I know
+target_workspace=""
 
-case $current_workspace in
-  [0-5])   inc=0 ;;
-  [6-9])   inc=5 ;;
-  1[0-5])  inc=10 ;;
-  1[6-9])  inc=15 ;;
-  2[0-5])  inc=20 ;;
-  *)       inc=25 ;;
-esac
-
-target_workspace=$((target_workspace + inc))
-
-
-if [ "$1" == "--left" ]; then
-  if [ "$current_workspace" -eq 1 ] || [ "$current_workspace" -eq 6 ] || [ "$current_workspace" -eq 11 ]; then
+# Handle relative movement (--left / --right)
+if [[ "$1" == "--left" ]]; then
+  if (( current_workspace % 5 == 1 )); then
+    # We are on workspace 1, 6, 11, etc.
     echo "No workspace to the left"
     exit 0
   else
     target_workspace=$((current_workspace - 1))
   fi
-elif [ "$1" == "--right" ]; then
-  if [ "$current_workspace" -eq 5 ] || [ "$current_workspace" -eq 10 ] || [ "$current_workspace" -eq 15 ]; then
+elif [[ "$1" == "--right" ]]; then
+  if (( current_workspace % 5 == 0 )); then
+    # We are on workspace 5, 10, 15, etc.
     echo "No workspace to the right"
     exit 0
   else
     target_workspace=$((current_workspace + 1))
   fi
+else
+  # Handle numeric movement (1-5)
+  # Determine the current monitor's workspace block (e.g., 1-5, 6-10, 11-15)
+  case $current_workspace in
+    [1-5])   inc=0 ;;
+    [6-9]|10)  inc=5 ;;
+    1[1-5])  inc=10 ;;
+    1[6-9]|20) inc=15 ;;
+    2[1-5])  inc=20 ;;
+    *)       inc=25 ;;
+  esac
+  target_workspace=$(($1 + inc))
 fi
 
-# switch to workspace
-if [ "$current_monitor" == "DP-1" ]; then
-  hyprctl dispatch ${keyword} "${target_workspace}"
-elif [ "$current_monitor" == "DP-2" ]; then
-  hyprctl dispatch ${keyword} "${target_workspace}"
-# elif [ "$current_monitor" == "HDMI-A-1" ]; then
-#   ((workspace += 10))
-#   hyprctl dispatch ${keyword} "${target_workspace}"
-# elif [ "$current_monitor" == "DP-3" ]; then
-#   ((workspace += 20))
-#   hyprctl dispatch ${keyword} "${target_workspace}"
+# Dispatch the command for known monitors
+if [[ "$current_monitor" == "DP-1" || "$current_monitor" == "DP-2" ]]; then
+  hyprctl dispatch "${operation}" "${target_workspace}"
 else
-  echo "Monitor not found"
+  echo "Error: Monitor '$current_monitor' not configured in script."
   exit 1
 fi

@@ -2,6 +2,8 @@
 # /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
 # This script for selecting wallpapers (SUPER W)
 
+# NOTE: keeping this for compatability / rofi fallback
+
 SCRIPTSDIR="$HOME/.config/hypr/scripts"
 echo $SCRIPTSDIR
 

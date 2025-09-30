@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Navigate to a specific workspace in a 5x5 grid with animated transitions
+#
+# Author:      travmonkey
+# Date:        2025-09-30
+# Description: script to switch between workspaces in a 5x5 grid (independent of monitor)
 # Usage: gotoWorkspace.sh <workspace_id> [--move] [--silent] [--horizontal-first]
+
 set -euo pipefail
 
 if [ -z "${1:-}" ]; then
