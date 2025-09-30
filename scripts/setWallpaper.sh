@@ -32,8 +32,6 @@ swww query || swww init
 swww img -o "$current_monitor" "$WALLPAPER_PATH" $SWWW_PARAMS
 
 # Original script's logic to update a symlink
-# Ensure the path /home/travmonkey/.current_wallpaper is correct for your system
-# You might want to change it to something like "$HOME/.current_wallpaper"
 if [[ "$current_monitor" == "DP-1" ]]; then
   rm -f "$HOME"/.current_wallpaper
   ln -s "$WALLPAPER_PATH" "$HOME"/.current_wallpaper
