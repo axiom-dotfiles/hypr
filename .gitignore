@@ -1,0 +1,2 @@
+hyprland/user/*.conf
+!hyprland/user/variables.conf
