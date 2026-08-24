@@ -1,29 +1,4 @@
 -- core/windowrules.lua
--- Migrated from your commented-out windowrule / windowrulev2 block.
---
--- Since Hyprland v0.55, window rules use hl.window_rule({ match = {...},
--- ...effects }). Rules are evaluated top to bottom, so order matters --
--- kept in the same order as your original block.
---
--- CONFIDENCE NOTES (read once, applies throughout this file):
---   Confirmed by the official wiki / example config: match.class,
---   match.title (both RE2 regex), float (prop + effect), fullscreen
---   (prop), pin (prop + effect), xwayland (prop), no_blur, rounding,
---   opacity (string, same "ACTIVE INACTIVE [FULLSCREEN] [override]"
---   format as before), border_color, move ({x,y} table OR a formula
---   string using monitor_w/h, window_w/h, cursor_x/y), size (same,
---   {w,h} table or a formula/percent string), animation, suppress_event
---   (single event name string, e.g. "activatefocus", "maximize").
---   INFERRED, not found documented anywhere -- test these specifically:
---   pseudo = true, tile = true, fullscreen = true as an *effect*
---   (confirmed only as a match prop). workspace = "..." assigns a
---   newly-matched window to a workspace -- CONFIRMED, but there is no
---   separate `silent` field: the "silent" modifier is part of the same
---   string, exactly like the old rule value, e.g.
---   workspace = "special:special silent".
---   There's also no confirmed dedicated "center" effect, so screen-
---   centering below uses the same move-formula trick the wiki uses for
---   cursor-centering.
 
 -- fcitx
 hl.window_rule({ match = { class = "fcitx" }, pseudo = true }) -- TODO: verify pseudo effect name
