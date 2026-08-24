@@ -46,6 +46,44 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# --- Lua-config helpers ---------------------------------------------------
+# `hyprctl keyword ...` and `hyprctl dispatch <op> <arg>` (bare, space-
+# separated args) are both hyprlang-era syntax and break under Hyprland's
+# Lua dispatcher parser (0.55+). Same root cause as wasd.sh and
+# workspaceSwitching.sh, factored into two helpers here since this script
+# calls both six times.
+
+set_anim() {
+  # $1: bezier style ("slide" | "slidevert" | "fade")
+  # hl.animation() is a config function, not a dispatcher, so it goes
+  # through plain `hyprctl eval` -- no hl.dispatch(...) wrapper needed.
+  hyprctl eval "hl.animation({ leaf = \"workspaces\", enabled = true, speed = 2.5, bezier = \"wind\", style = \"$1\" })"
+}
+
+move_to() {
+  # $1: target workspace number. Reads $operation from the outer scope.
+  # NOTE: the `silent = true` field on window.move() (for the old
+  # "movetoworkspacesilent") is an unconfirmed guess -- I couldn't find it
+  # documented on the wiki. Test it; if the focused workspace still jumps
+  # when using --move --silent, this needs a different approach (e.g.
+  # move, then dispatch a follow-up focus() back to $current_workspace).
+  local ws=$1
+  local lua_dispatch
+  case "$operation" in
+    movetoworkspacesilent)
+      lua_dispatch="hl.dsp.window.move({ workspace = ${ws}, silent = true })"
+      ;;
+    movetoworkspace)
+      lua_dispatch="hl.dsp.window.move({ workspace = ${ws} })"
+      ;;
+    *)
+      lua_dispatch="hl.dsp.focus({ workspace = ${ws} })"
+      ;;
+  esac
+  hyprctl dispatch "${lua_dispatch}"
+}
+# ---------------------------------------------------------------------------
+
 # Get current workspace and monitor
 current_monitor=$(hyprctl -j activeworkspace | jq -r .monitor)
 current_workspace=$(hyprctl -j activeworkspace | jq .id)
@@ -92,43 +130,42 @@ fi
 if [ "$movement_order" = "horizontal-first" ]; then
   # Move horizontally first: go to (current_row, target_col)
   intermediate_workspace=$((GRID_START + (current_row - 1) * GRID_W + (target_col - 1)))
-  
+
   # First move: horizontal to target column
   if [ "$current_col" -ne "$target_col" ]; then
     if [ "$target_col" -gt "$current_col" ]; then
       echo "Moving right to column $target_col"
-      hyprctl keyword animation "workspaces, 1, 2.5, wind, slide"
     else
       echo "Moving left to column $target_col"
-      hyprctl keyword animation "workspaces, 1, 2.5, wind, slide"
     fi
-    hyprctl dispatch ${operation} "$intermediate_workspace"
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, fade"
+    set_anim "slide"
+    move_to "$intermediate_workspace"
+    set_anim "fade"
   fi
-  
+
   # Second move: vertical to target row
   if [ "$current_row" -ne "$target_row" ]; then
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, slidevert"
-    hyprctl dispatch ${operation} "$target_workspace"
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, fade"
+    set_anim "slidevert"
+    move_to "$target_workspace"
+    set_anim "fade"
   fi
 else
   # Default: Move vertically first: go to (target_row, current_col)
   intermediate_workspace=$((GRID_START + (target_row - 1) * GRID_W + (current_col - 1)))
-  
+
   # First move: vertical to target row
   if [ "$current_row" -ne "$target_row" ]; then
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, slidevert"
-    hyprctl dispatch ${operation} "$intermediate_workspace"
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, fade"
+    set_anim "slidevert"
+    move_to "$intermediate_workspace"
+    set_anim "fade"
   fi
-  
+
   # Second move: horizontal to target column
   if [ "$current_col" -ne "$target_col" ]; then
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, slide"
+    set_anim "slide"
     sleep 0.08
-    hyprctl dispatch ${operation} "$target_workspace"
-    hyprctl keyword animation "workspaces, 1, 2.5, wind, fade"
+    move_to "$target_workspace"
+    set_anim "fade"
   fi
 fi
 

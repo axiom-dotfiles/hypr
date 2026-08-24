@@ -17,7 +17,7 @@ rand=$[$RANDOM % ${#transitions[@]}]
 TYPE=${transitions[$rand]}
 DURATION=1
 BEZIER=".43,1.19,1,.4"
-SWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION"
+AWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION"
 
 # Check if swaybg is running
 if pidof swaybg > /dev/null; then
@@ -49,7 +49,7 @@ menu() {
   printf "$RANDOM_PIC_NAME\n"
 }
 
-swww query || swww init
+awww query || awww init
 
 
 main() {
@@ -63,7 +63,7 @@ main() {
 
   # Random choice case
   if [ "$choice" = "$RANDOM_PIC_NAME" ]; then
-    swww img "${wallDIR}/${RANDOM_PIC}" $SWWW_PARAMS
+    awww img "${wallDIR}/${RANDOM_PIC}" $AWWW_PARAMS
     exit 0
   fi
 
@@ -78,7 +78,7 @@ main() {
   done
 
   if [[ $pic_index -ne -1 ]]; then
-    swww img -o $current_monitor "${wallDIR}/${PICS[$pic_index]}" $SWWW_PARAMS
+    awww img -o $current_monitor "${wallDIR}/${PICS[$pic_index]}" $AWWW_PARAMS
     if [[ $current_monitor == DP-1 ]]; then
       rm "$HOME/.current_wallpaper"
       ln -s ${wallDIR}/${PICS[$pic_index]} $HOME/.current_wallpaper

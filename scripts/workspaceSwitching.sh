@@ -5,26 +5,19 @@
 # Description: Switches or moves windows between workspaces on the active monitor.
 #              Supports numeric (1-5) and relative (--left/--right) switching.
 # Usage:       workspaceSwitching.sh <1-5 | --left | --right> [--move]
-
 # Note: This script is legacy
-
 set -euo pipefail
-
 if [ -z "$1" ]; then
   echo "Usage: $0 <1-5 | --left | --right> [--move]"
   exit 1
 fi
-
-operation="workspace"
+move=false
 if [[ "${2:-}" == "--move" ]]; then
-  operation="movetoworkspace"
+  move=true
 fi
-
 current_monitor=$(hyprctl -j activeworkspace | jq -r .monitor)
 current_workspace=$(hyprctl -j activeworkspace | jq .id)
-
 target_workspace=""
-
 # Handle relative movement (--left / --right)
 if [[ "$1" == "--left" ]]; then
   if (( current_workspace % 5 == 1 )); then
@@ -55,10 +48,20 @@ else
   esac
   target_workspace=$(($1 + inc))
 fi
-
 # Dispatch the command for known monitors
 if [[ "$current_monitor" == "DP-1" || "$current_monitor" == "DP-2" ]]; then
-  hyprctl dispatch "${operation}" "${target_workspace}"
+  # `hyprctl dispatch "${operation}" "${target_workspace}"` (two bare args)
+  # is the old hyprlang-era syntax, and is what breaks under the Lua
+  # dispatcher parser -- same issue as wasd.sh. Build a single Lua
+  # dispatcher expression instead:
+  #   focus({ workspace = N })       -- switch active workspace (old: "workspace")
+  #   window.move({ workspace = N }) -- move active window + follow (old: "movetoworkspace")
+  if $move; then
+    lua_dispatch="hl.dsp.window.move({ workspace = ${target_workspace} })"
+  else
+    lua_dispatch="hl.dsp.focus({ workspace = ${target_workspace} })"
+  fi
+  hyprctl dispatch "${lua_dispatch}"
 else
   echo "Error: Monitor '$current_monitor' not configured in script."
   exit 1
