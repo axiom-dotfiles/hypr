@@ -46,7 +46,7 @@ M.task     = 'kitty --title "btop" -e btop'
 M.mixer    = "pavucontrol"
 
 -- Screenshots
-M.screenshot           = "grimblast --freeze copy area"
-M.screenshot_clipboard = "rm -f /tmp/ocr-input.png && rm -f /tmp/ocr-done && grimblast --freeze save area /tmp/ocr-input.png"
+M.screenshot           = M.scripts .. "/grimblast.sh --freeze copy area"
+M.screenshot_clipboard = "rm -f /tmp/ocr-input.png && rm -f /tmp/ocr-done && " .. M.scripts .. "/grimblast.sh --freeze save area /tmp/ocr-input.png"
 
 return M

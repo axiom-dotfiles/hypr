@@ -17,7 +17,7 @@ local mod2 = vars.mod2
 
 -- {{ WINDOW }}
 -- Window Management
-
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd(vars.scripts .. "/rotateMonitor.sh"))
 -- Move focus
 hl.bind(mod .. " + h", hl.dsp.focus({ direction = "left" }))
 hl.bind(mod .. " + j", hl.dsp.focus({ direction = "down" }))
@@ -121,10 +121,10 @@ hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Special workspaces
-hl.bind(mod .. " + g", hl.dsp.workspace.toggle_special("special"))
-hl.bind(mod .. " + SHIFT + g", hl.dsp.window.move({ workspace = "special:special" }))
-hl.bind(mod .. " + v", hl.dsp.workspace.toggle_special("lens"))
-hl.bind(mod .. " + SHIFT + v", hl.dsp.window.move({ workspace = "special:lens" }))
+hl.bind(mod .. " + g", hl.dsp.workspace.toggle_special("gaming"))
+hl.bind(mod .. " + SHIFT + g", hl.dsp.window.move({ workspace = "special:gaming" }))
+hl.bind(mod .. " + v", hl.dsp.workspace.toggle_special("other"))
+hl.bind(mod .. " + SHIFT + v", hl.dsp.window.move({ workspace = "special:other" }))
 
 -- Application Launchers
 hl.bind(mod .. " + q", hl.dsp.exec_cmd(vars.terminal))

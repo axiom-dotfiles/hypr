@@ -37,14 +37,6 @@ hl.window_rule({
   move = { "monitor_w/2 - window_w/2", "monitor_h/2 - window_h/2" },
 })
 
--- gamescope
-hl.window_rule({
-  match = { class = "gamescope" },
-  no_blur = true,
-  fullscreen = true, -- TODO: confirmed as a match prop, not confirmed as an effect
-  -- workspace = "special silent",
-})
-
 -- Opacity overrides
 hl.window_rule({ match = { class = "^(kitty)$" }, opacity = "1 1" })
 hl.window_rule({ match = { title = "^(btop)$" }, opacity = "1 override 1 override" })
@@ -54,9 +46,71 @@ hl.window_rule({ match = { title = "^(.*KiCad.*)$" }, opacity = "1 override 1 ov
 hl.window_rule({ match = { class = "^steam$" }, float = true, size = "45% 60%" })
 hl.window_rule({
   match = { class = "^steam$", title = "^Steam$" },
-  tile = true, -- TODO: unconfirmed effect name (inverse of float=true)
+  tile = true,
 })
 hl.window_rule({ match = { title = "^Steam$" }, suppress_event = "activatefocus" })
+
+-- gamescope: pin to the special "gaming" workspace instead of wherever it opens
+hl.window_rule({
+  match = { class = "gamescope" },
+  no_blur = true,
+  fullscreen = true, -- TODO: confirmed as a match prop, not confirmed as an effect
+  workspace = "special:gaming",
+})
+
+local GAME_CLASS_PATTERNS = { "^cs2$", "^steam_app_%d+$" }
+local GAME_WORKSPACE = "special:gaming"
+
+-- Static class-pattern matches: these can be expressed directly as
+-- declarative window rules.
+for _, pat in ipairs(GAME_CLASS_PATTERNS) do
+  hl.window_rule({
+    match = { class = pat },
+    workspace = GAME_WORKSPACE,
+  })
+end
+
+-- Returns the Steam app id (string) if the process was launched by Steam,
+-- else nil.
+local function steamAppIdOf(pid)
+  if not pid or pid <= 0 then
+    return nil
+  end
+  local f = io.open("/proc/" .. pid .. "/environ", "rb")
+  if not f then
+    return nil
+  end
+  local env = f:read("a") or ""
+  f:close()
+  -- NUL-separated; anchor on the separator (or start) so e.g.
+  -- FOO_SteamAppId= wouldn't match.
+  return env:match("\0SteamAppId=(%d+)") or env:match("^SteamAppId=(%d+)")
+end
+
+local function isGameWindow(w)
+  if not w then
+    return false
+  end
+  if w.content_type == "game" then
+    return true
+  end
+  local cls = w.class or ""
+  for _, pat in ipairs(GAME_CLASS_PATTERNS) do
+    if cls:match(pat) then
+      return true
+    end
+  end
+  return steamAppIdOf(w.pid) ~= nil
+end
+
+-- Dynamic check (content_type == "game" / SteamAppId env var): these can't
+-- be expressed as a static "match" table since they depend on runtime
+-- process info, so hook window-open and dispatch a move for any match.
+hl.on("window.open", function(w)
+    if isGameWindow(w) then
+        hl.dispatch(hl.dsp.window.move({ workspace = GAME_WORKSPACE, window = w }))
+    end
+end)
 
 -- Picture-in-Picture
 hl.window_rule({
@@ -98,10 +152,4 @@ hl.window_rule({
   workspace = "special:special silent",
   move = { 159, 142 },
   size = { 1315, 951 },
-})
-
--- OpenLens -> its own special workspace, no size/position change
-hl.window_rule({
-  match = { class = "^(OpenLens)$" },
-  workspace = "special:lens silent",
 })
