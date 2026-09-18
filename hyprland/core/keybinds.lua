@@ -123,8 +123,8 @@ hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Special workspaces
 hl.bind(mod .. " + g", hl.dsp.workspace.toggle_special("gaming"))
 hl.bind(mod .. " + SHIFT + g", hl.dsp.window.move({ workspace = "special:gaming" }))
-hl.bind(mod .. " + v", hl.dsp.workspace.toggle_special("other"))
-hl.bind(mod .. " + SHIFT + v", hl.dsp.window.move({ workspace = "special:other" }))
+hl.bind(mod .. " + v", hl.dsp.workspace.toggle_special("special"))
+hl.bind(mod .. " + SHIFT + v", hl.dsp.window.move({ workspace = "special:special" }))
 
 -- Application Launchers
 hl.bind(mod .. " + q", hl.dsp.exec_cmd(vars.terminal))

@@ -1,5 +1,6 @@
 -- core/startup.lua
 -- Migrated from core/startup.conf
+local vars = require("hyprland.core.variables")
 
 -- env = VAR, value  ->  hl.env(VAR, value)
 hl.env("XCURSOR_THEME", "Oxygen-06-Magenta")
@@ -29,4 +30,5 @@ hl.on("hyprland.start", function()
   -- hl.exec_cmd("element-desktop &")
   hl.exec_cmd("protonmail-bridge --no-window &")
   hl.exec_cmd("gtk-launch deej")
+  hl.exec_cmd("bash " .. vars.scripts .. "/gotoWorkspace.sh 13")
 end)
