@@ -28,11 +28,8 @@ hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }), 
 hl.bind(mod .. " + f", hl.dsp.window.fullscreen(), { description = "Window: Fullscreen" })
 hl.bind(mod .. " + c", hl.dsp.window.close(), { description = "Window: Close" })
 hl.bind(mod .. " + z", hl.dsp.window.float({ action = "toggle" }), { description = "Window: Toggle floating" })
--- hl.bind(mod .. " + x", hl.dsp.exec_cmd("hyprctl dispatch layoutmsg"))
--- hl.bind(mod2 .. " + s", hl.dsp.exec_cmd("hyprctl dispatch layoutmsg"))
 
 -- {{ WORKSPACE }}
--- Workspace navigation (WASD, HJKL, 1-5 and the move versions) and axiom's
 -- launcher/overlay binds are in axiom: Settings → Desktop → Hyprland → Keybinds.
 
 -- Resize Layouts
@@ -40,16 +37,6 @@ hl.bind(mod .. " + CTRL + h", hl.dsp.window.resize({ x = -50, y = 0, relative = 
 hl.bind(mod .. " + CTRL + l", hl.dsp.window.resize({ x = 50, y = 0, relative = true}), { repeating = true, description = "Window: Grow width" })
 hl.bind(mod .. " + CTRL + j", hl.dsp.window.resize({ x = 0, y = 50, relative = true}), { repeating = true, description = "Window: Grow height" })
 hl.bind(mod .. " + CTRL + k", hl.dsp.window.resize({ x = 0, y = -50, relative = true}), { repeating = true, description = "Window: Shrink height" })
-
--- hl.bind(mod .. " + CTRL + left", hl.dsp.exec_cmd("hyprctl dispatch resizeactive -50 0"), { repeating = true })
--- hl.bind(mod .. " + CTRL + down", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 0 50"), { repeating = true })
--- hl.bind(mod .. " + CTRL + up", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 0 -50"), { repeating = true })
--- hl.bind(mod .. " + CTRL + right", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 50 0"), { repeating = true })
-
--- hl.bind(mod .. " + CTRL + w", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 0 -50"), { repeating = true })
--- hl.bind(mod .. " + CTRL + a", hl.dsp.exec_cmd("hyprctl dispatch resizeactive -50 0"), { repeating = true })
--- hl.bind(mod .. " + CTRL + s", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 0 50"), { repeating = true })
--- hl.bind(mod .. " + CTRL + d", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 50 0"), { repeating = true })
 
 -- {{ OTHER }}
 -- Axiom
