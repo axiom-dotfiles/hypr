@@ -114,9 +114,8 @@ hl.bind(mod .. " + CTRL + k", hl.dsp.window.resize({ x = 0, y = -50, relative = 
 
 -- {{ OTHER }}
 -- Axiom
--- `bindr` (fires on key release) -> guessed as { on_release = true }.
--- TODO: verify the exact option name against the wiki's Binds page.
-hl.bind(mod .. " + CTRL + r", hl.dsp.exec_cmd(vars.axiom_restart), { on_release = true, description = "Axiom: Restart shell" })
+-- `bindr` (fires on key release) -> { release = true } (HL.BindOptions).
+hl.bind(mod .. " + CTRL + r", hl.dsp.exec_cmd(vars.axiom_restart), { release = true, description = "Axiom: Restart shell" })
 hl.bind(mod .. " + SHIFT + space", hl.dsp.exec_cmd(vars.axiom_workspace), { description = "Axiom: Workspace overlay" })
 hl.bind(mod .. " + space", hl.dsp.exec_cmd(vars.axiom_launch), { description = "Axiom: App launcher" })
 hl.bind(mod .. " + m", hl.dsp.exec_cmd(vars.axiom_overlay), { description = "Axiom: Overlay" })

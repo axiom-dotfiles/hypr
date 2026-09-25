@@ -2,7 +2,7 @@
 #
 # Description: Toggle the focused monitor between normal and 90° rotation.
 #              Runtime-only -- calls hl.monitor() directly via `hyprctl eval`,
-#              same approach as wasd.sh's `hyprctl eval "hl.animation(...)"`
+#              same approach as axiom's `hyprctl eval "hl.animation(...)"`
 #              calls, since `hyprctl keyword` targets the legacy hyprlang
 #              parser and doesn't apply against a lua config. Nothing is
 #              written to hyprland.lua, so this does not persist across
@@ -33,7 +33,7 @@ else
   new_transform=1
 fi
 
-# hl.monitor() is a config function (like hl.animation() in wasd.sh), so it's
+# hl.monitor() is a config function (like hl.animation()), so it's
 # called through `hyprctl eval` rather than wrapped in hl.dispatch(...) --
 # that wrapper is only for dispatchers (hl.dsp.*).
 #

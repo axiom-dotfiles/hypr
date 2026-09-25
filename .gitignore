@@ -1,2 +1,2 @@
-hyprland/user/*.conf
-!hyprland/user/variables.conf
+# Hyprland writes a stub hyprland.conf when it finds no config; the live one is hyprland.lua
+hyprland.conf
