@@ -46,39 +46,44 @@ hl.bind(mod .. " + z", hl.dsp.window.float({ action = "toggle" }), { description
 -- hl.bind(mod2 .. " + s", hl.dsp.exec_cmd("hyprctl dispatch layoutmsg"))
 
 -- {{ WORKSPACE }}
+-- Navigation goes through axiom (vars.axiom_ws), so it follows the layout
+-- set in axiom's Workspaces settings (grid size, per-monitor ranges, wrap,
+-- directional slides) instead of being hardcoded here.
+local ws = vars.axiom_ws
 
 -- WASD Motions
-hl.bind(mod .. " + a", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --left"), { description = "Workspace: Switch left" })
-hl.bind(mod .. " + d", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --right"), { description = "Workspace: Switch right" })
-hl.bind(mod .. " + w", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --up"), { description = "Workspace: Switch up" })
-hl.bind(mod .. " + s", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --down"), { description = "Workspace: Switch down" })
+hl.bind(mod .. " + a", hl.dsp.exec_cmd(ws .. "left"), { description = "Workspace: Switch left" })
+hl.bind(mod .. " + d", hl.dsp.exec_cmd(ws .. "right"), { description = "Workspace: Switch right" })
+hl.bind(mod .. " + w", hl.dsp.exec_cmd(ws .. "up"), { description = "Workspace: Switch up" })
+hl.bind(mod .. " + s", hl.dsp.exec_cmd(ws .. "down"), { description = "Workspace: Switch down" })
 
 -- WASD Move Window
-hl.bind(mod .. " + SHIFT + a", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --left --move"), { description = "Workspace: Move window left" })
-hl.bind(mod .. " + SHIFT + d", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --right --move"), { description = "Workspace: Move window right" })
-hl.bind(mod .. " + SHIFT + w", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --up --move"), { description = "Workspace: Move window up" })
-hl.bind(mod .. " + SHIFT + s", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --down --move"), { description = "Workspace: Move window down" })
+hl.bind(mod .. " + SHIFT + a", hl.dsp.exec_cmd(ws .. "step left move"), { description = "Workspace: Move window left" })
+hl.bind(mod .. " + SHIFT + d", hl.dsp.exec_cmd(ws .. "step right move"), { description = "Workspace: Move window right" })
+hl.bind(mod .. " + SHIFT + w", hl.dsp.exec_cmd(ws .. "step up move"), { description = "Workspace: Move window up" })
+hl.bind(mod .. " + SHIFT + s", hl.dsp.exec_cmd(ws .. "step down move"), { description = "Workspace: Move window down" })
 
 -- VIM Motions
-hl.bind(mod2 .. " + j", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --down"), { description = "Workspace: Switch down" })
-hl.bind(mod2 .. " + k", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --up"), { description = "Workspace: Switch up" })
-hl.bind(mod2 .. " + h", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --left"), { description = "Workspace: Switch left" })
-hl.bind(mod2 .. " + l", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --right"), { description = "Workspace: Switch right" })
+hl.bind(mod2 .. " + j", hl.dsp.exec_cmd(ws .. "down"), { description = "Workspace: Switch down" })
+hl.bind(mod2 .. " + k", hl.dsp.exec_cmd(ws .. "up"), { description = "Workspace: Switch up" })
+hl.bind(mod2 .. " + h", hl.dsp.exec_cmd(ws .. "left"), { description = "Workspace: Switch left" })
+hl.bind(mod2 .. " + l", hl.dsp.exec_cmd(ws .. "right"), { description = "Workspace: Switch right" })
 
 -- VIM Move Window
-hl.bind(mod2 .. " + SHIFT + j", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --down --move"), { description = "Workspace: Move window down" })
-hl.bind(mod2 .. " + SHIFT + k", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --up --move"), { description = "Workspace: Move window up" })
-hl.bind(mod2 .. " + SHIFT + h", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --left --move"), { description = "Workspace: Move window left" })
-hl.bind(mod2 .. " + SHIFT + l", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --right --move"), { description = "Workspace: Move window right" })
+hl.bind(mod2 .. " + SHIFT + j", hl.dsp.exec_cmd(ws .. "step down move"), { description = "Workspace: Move window down" })
+hl.bind(mod2 .. " + SHIFT + k", hl.dsp.exec_cmd(ws .. "step up move"), { description = "Workspace: Move window up" })
+hl.bind(mod2 .. " + SHIFT + h", hl.dsp.exec_cmd(ws .. "step left move"), { description = "Workspace: Move window left" })
+hl.bind(mod2 .. " + SHIFT + l", hl.dsp.exec_cmd(ws .. "step right move"), { description = "Workspace: Move window right" })
 
--- Switch directly to workspace
+-- Switch directly to workspace: the n-th of the current grid row (or
+-- workspace n in axiom's standard layout)
 for i = 1, 5 do
-  hl.bind(mod .. " + " .. i, hl.dsp.exec_cmd(vars.scripts .. "/workspaceSwitching.sh " .. i), { description = "Workspace: Go to workspace " .. i })
+  hl.bind(mod .. " + " .. i, hl.dsp.exec_cmd(ws .. "nth " .. i .. " go"), { description = "Workspace: Go to workspace " .. i })
 end
 
 -- Switch directly to workspace and bring window
 for i = 1, 5 do
-  hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.exec_cmd(vars.scripts .. "/workspaceSwitching.sh " .. i .. " --move"), { description = "Workspace: Move window to workspace " .. i })
+  hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.exec_cmd(ws .. "nth " .. i .. " move"), { description = "Workspace: Move window to workspace " .. i })
 end
 
 -- Move window to workspace (silent)
@@ -86,10 +91,10 @@ end
 -- above. In your original .conf, a later duplicate bind overrides the
 -- earlier one, so these silent-move binds are the ones that actually fire
 -- for mod+arrows. Kept the same override order here.
-hl.bind(mod .. " + up", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --up --move --silent"), { description = "Workspace: Move window up (silent)" })
-hl.bind(mod .. " + down", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --down --move --silent"), { description = "Workspace: Move window down (silent)" })
-hl.bind(mod .. " + left", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --left --move --silent"), { description = "Workspace: Move window left (silent)" })
-hl.bind(mod .. " + right", hl.dsp.exec_cmd(vars.scripts .. "/wasd.sh --right --move --silent"), { description = "Workspace: Move window right (silent)" })
+hl.bind(mod .. " + up", hl.dsp.exec_cmd(ws .. "step up moveSilent"), { description = "Workspace: Move window up (silent)" })
+hl.bind(mod .. " + down", hl.dsp.exec_cmd(ws .. "step down moveSilent"), { description = "Workspace: Move window down (silent)" })
+hl.bind(mod .. " + left", hl.dsp.exec_cmd(ws .. "step left moveSilent"), { description = "Workspace: Move window left (silent)" })
+hl.bind(mod .. " + right", hl.dsp.exec_cmd(ws .. "step right moveSilent"), { description = "Workspace: Move window right (silent)" })
 
 -- Resize Layouts
 hl.bind(mod .. " + CTRL + h", hl.dsp.window.resize({ x = -50, y = 0, relative = true}), { repeating = true, description = "Window: Shrink width" })

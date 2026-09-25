@@ -30,5 +30,7 @@ hl.on("hyprland.start", function()
   -- hl.exec_cmd("element-desktop &")
   hl.exec_cmd("protonmail-bridge --no-window &")
   hl.exec_cmd("gtk-launch deej")
-  hl.exec_cmd("bash " .. vars.scripts .. "/gotoWorkspace.sh 13")
+  -- Start in the middle of the grid. A plain dispatch: axiom (and its
+  -- workspaces IPC) is still starting at this point.
+  hl.dispatch(hl.dsp.focus({ workspace = 13 }))
 end)

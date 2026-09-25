@@ -27,6 +27,9 @@ M.axiom_restart   = M.axiom_kill .. "; " .. M.axiom_start
 M.axiom_launch    = M.axiom .. " ipc call appLauncher toggle"
 M.axiom_overlay   = M.axiom .. " ipc call overlay toggle"
 M.axiom_workspace = M.axiom .. " ipc call workspaceOverlay toggle"
+-- Workspace navigation, laid out by axiom's Workspaces setting (standard
+-- 1..N or a grid per monitor): append e.g. "left", "step up move", "nth 3 go"
+M.axiom_ws        = M.axiom .. " ipc call workspaces "
 
 -- Modifiers
 M.mod  = "SUPER"
