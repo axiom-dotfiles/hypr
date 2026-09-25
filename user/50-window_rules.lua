@@ -1,4 +1,4 @@
--- core/windowrules.lua
+-- 50-window_rules.lua
 
 -- fcitx
 hl.window_rule({ match = { class = "fcitx" }, pseudo = true }) -- TODO: verify pseudo effect name

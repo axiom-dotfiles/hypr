@@ -4,7 +4,7 @@
 
 # NOTE: keeping this for compatability / rofi fallback
 
-SCRIPTSDIR="$HOME/.config/hypr/scripts"
+SCRIPTSDIR="$HOME/.config/hypr/user/scripts"
 echo $SCRIPTSDIR
 
 # WALLPAPERS PATH

@@ -1,17 +1,7 @@
--- core/keybinds.lua
--- Migrated from core/keybinds.conf
---
--- A few dispatchers below have NO direct example in Hyprland's official
--- hyprland.lua template, so I've marked each one with -- TODO: verify.
--- Those are educated guesses at the naming pattern (hl.dsp.*), not
--- confirmed. Everything else (hl.dsp.exec_cmd, window.close,
--- window.float toggle, window.pseudo, layout("togglesplit"),
--- focus({direction=...}), window.move({workspace=...}),
--- workspace.toggle_special, window.drag/resize with {mouse=true},
--- and the {locked, repeating} bind options) is taken directly from
--- Hyprland's official example config, so those are safe as-is.
+-- 40-keybinds.lua: your own binds. mod + arrows send a window to the next
+-- workspace (axiom's keybinds), so focus moves with mod + hjkl.
 
-local vars = require("hyprland.core.variables")
+local vars = require("user.lib.variables")
 local mod  = vars.mod
 local mod2 = vars.mod2
 
@@ -23,10 +13,6 @@ hl.bind(mod .. " + h", hl.dsp.focus({ direction = "left" }), { description = "Wi
 hl.bind(mod .. " + j", hl.dsp.focus({ direction = "down" }), { description = "Window: Focus down" })
 hl.bind(mod .. " + k", hl.dsp.focus({ direction = "up" }), { description = "Window: Focus up" })
 hl.bind(mod .. " + l", hl.dsp.focus({ direction = "right" }), { description = "Window: Focus right" })
-hl.bind(mod .. " + left", hl.dsp.focus({ direction = "left" }), { description = "Window: Focus left" })
-hl.bind(mod .. " + down", hl.dsp.focus({ direction = "down" }), { description = "Window: Focus down" })
-hl.bind(mod .. " + up", hl.dsp.focus({ direction = "up" }), { description = "Window: Focus up" })
-hl.bind(mod .. " + right", hl.dsp.focus({ direction = "right" }), { description = "Window: Focus right" })
 
 -- Move window
 hl.bind(mod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }), { description = "Window: Move left" })
@@ -46,55 +32,8 @@ hl.bind(mod .. " + z", hl.dsp.window.float({ action = "toggle" }), { description
 -- hl.bind(mod2 .. " + s", hl.dsp.exec_cmd("hyprctl dispatch layoutmsg"))
 
 -- {{ WORKSPACE }}
--- Navigation goes through axiom (vars.axiom_ws), so it follows the layout
--- set in axiom's Workspaces settings (grid size, per-monitor ranges, wrap,
--- directional slides) instead of being hardcoded here.
-local ws = vars.axiom_ws
-
--- WASD Motions
-hl.bind(mod .. " + a", hl.dsp.exec_cmd(ws .. "left"), { description = "Workspace: Switch left" })
-hl.bind(mod .. " + d", hl.dsp.exec_cmd(ws .. "right"), { description = "Workspace: Switch right" })
-hl.bind(mod .. " + w", hl.dsp.exec_cmd(ws .. "up"), { description = "Workspace: Switch up" })
-hl.bind(mod .. " + s", hl.dsp.exec_cmd(ws .. "down"), { description = "Workspace: Switch down" })
-
--- WASD Move Window
-hl.bind(mod .. " + SHIFT + a", hl.dsp.exec_cmd(ws .. "step left move"), { description = "Workspace: Move window left" })
-hl.bind(mod .. " + SHIFT + d", hl.dsp.exec_cmd(ws .. "step right move"), { description = "Workspace: Move window right" })
-hl.bind(mod .. " + SHIFT + w", hl.dsp.exec_cmd(ws .. "step up move"), { description = "Workspace: Move window up" })
-hl.bind(mod .. " + SHIFT + s", hl.dsp.exec_cmd(ws .. "step down move"), { description = "Workspace: Move window down" })
-
--- VIM Motions
-hl.bind(mod2 .. " + j", hl.dsp.exec_cmd(ws .. "down"), { description = "Workspace: Switch down" })
-hl.bind(mod2 .. " + k", hl.dsp.exec_cmd(ws .. "up"), { description = "Workspace: Switch up" })
-hl.bind(mod2 .. " + h", hl.dsp.exec_cmd(ws .. "left"), { description = "Workspace: Switch left" })
-hl.bind(mod2 .. " + l", hl.dsp.exec_cmd(ws .. "right"), { description = "Workspace: Switch right" })
-
--- VIM Move Window
-hl.bind(mod2 .. " + SHIFT + j", hl.dsp.exec_cmd(ws .. "step down move"), { description = "Workspace: Move window down" })
-hl.bind(mod2 .. " + SHIFT + k", hl.dsp.exec_cmd(ws .. "step up move"), { description = "Workspace: Move window up" })
-hl.bind(mod2 .. " + SHIFT + h", hl.dsp.exec_cmd(ws .. "step left move"), { description = "Workspace: Move window left" })
-hl.bind(mod2 .. " + SHIFT + l", hl.dsp.exec_cmd(ws .. "step right move"), { description = "Workspace: Move window right" })
-
--- Switch directly to workspace: the n-th of the current grid row (or
--- workspace n in axiom's standard layout)
-for i = 1, 5 do
-  hl.bind(mod .. " + " .. i, hl.dsp.exec_cmd(ws .. "nth " .. i .. " go"), { description = "Workspace: Go to workspace " .. i })
-end
-
--- Switch directly to workspace and bring window
-for i = 1, 5 do
-  hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.exec_cmd(ws .. "nth " .. i .. " move"), { description = "Workspace: Move window to workspace " .. i })
-end
-
--- Move window to workspace (silent)
--- NOTE: these reuse the mod + arrow-key combos already bound to movefocus
--- above. In your original .conf, a later duplicate bind overrides the
--- earlier one, so these silent-move binds are the ones that actually fire
--- for mod+arrows. Kept the same override order here.
-hl.bind(mod .. " + up", hl.dsp.exec_cmd(ws .. "step up moveSilent"), { description = "Workspace: Move window up (silent)" })
-hl.bind(mod .. " + down", hl.dsp.exec_cmd(ws .. "step down moveSilent"), { description = "Workspace: Move window down (silent)" })
-hl.bind(mod .. " + left", hl.dsp.exec_cmd(ws .. "step left moveSilent"), { description = "Workspace: Move window left (silent)" })
-hl.bind(mod .. " + right", hl.dsp.exec_cmd(ws .. "step right moveSilent"), { description = "Workspace: Move window right (silent)" })
+-- Workspace navigation (WASD, HJKL, 1-5 and the move versions) and axiom's
+-- launcher/overlay binds are in axiom: Settings → Desktop → Hyprland → Keybinds.
 
 -- Resize Layouts
 hl.bind(mod .. " + CTRL + h", hl.dsp.window.resize({ x = -50, y = 0, relative = true}), { repeating = true, description = "Window: Shrink width" })
@@ -116,9 +55,6 @@ hl.bind(mod .. " + CTRL + k", hl.dsp.window.resize({ x = 0, y = -50, relative = 
 -- Axiom
 -- `bindr` (fires on key release) -> { release = true } (HL.BindOptions).
 hl.bind(mod .. " + CTRL + r", hl.dsp.exec_cmd(vars.axiom_restart), { release = true, description = "Axiom: Restart shell" })
-hl.bind(mod .. " + SHIFT + space", hl.dsp.exec_cmd(vars.axiom_workspace), { description = "Axiom: Workspace overlay" })
-hl.bind(mod .. " + space", hl.dsp.exec_cmd(vars.axiom_launch), { description = "Axiom: App launcher" })
-hl.bind(mod .. " + m", hl.dsp.exec_cmd(vars.axiom_overlay), { description = "Axiom: Overlay" })
 
 -- Mouse Controls
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "Window: Drag" })

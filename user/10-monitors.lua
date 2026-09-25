@@ -1,4 +1,4 @@
--- core/monitors.lua
+-- 10-monitors.lua
 
 -- Fallback for any output without a rule below
 hl.monitor({
